@@ -1,0 +1,54 @@
+---
+import { getCollection, render } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import PostMeta from '../../components/PostMeta.astro';
+import Icon from '../../components/Icon.astro';
+import { getReadingStats } from '../../utils/reading-time';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map((article) => ({ params: { slug: article.id }, props: { article } }));
+}
+
+const { article } = Astro.props;
+const { Content } = await render(article);
+const { words, minutes } = getReadingStats(article.body ?? '');
+---
+<PageLayout title={`${article.data.title} | VoidStack`} description={article.data.description}>
+  <article>
+    <header class="post-page-header">
+      <div class="post-page-stats">
+        <span class="meta-chip"><Icon name="file-text" size={14} /><span>{words} words</span></span><span
+          class="meta-chip"
+          ><Icon name="clock" size={14} /><span>{minutes} minute{minutes === 1 ? '' : 's'}</span></span
+        >
+      </div>
+      <h1>{article.data.title}</h1>
+      <PostMeta article={article} />
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+    <a href="/" class="back-link"><Icon name="chevron-left" size={16} /><span>Back to all posts</span></a>
+  </article>
+</PageLayout>
+
+<script>
+  import mermaid from 'mermaid';
+
+  const blocks = document.querySelectorAll<HTMLPreElement>('pre[data-language="mermaid"]');
+  if (blocks.length) {
+    const isLight = document.body.classList.contains('light-theme');
+    mermaid.initialize({ startOnLoad: false, theme: isLight ? 'default' : 'dark', securityLevel: 'loose' });
+
+    blocks.forEach((pre) => {
+      const source = pre.textContent ?? '';
+      const container = document.createElement('div');
+      container.className = 'mermaid-diagram';
+      container.textContent = source;
+      pre.replaceWith(container);
+    });
+
+    mermaid.run({ querySelector: '.mermaid-diagram' });
+  }
+</script>

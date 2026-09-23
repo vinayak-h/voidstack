@@ -1,0 +1,22 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import PostMeta from './PostMeta.astro';
+import { getReadingStats } from '../utils/reading-time';
+
+interface Props {
+  article: CollectionEntry<'articles'>;
+}
+const { article } = Astro.props;
+const { words, minutes } = getReadingStats(article.body ?? '');
+---
+<article class="post-card">
+  <div class="post-body">
+    <h2 class="post-title"><a href={`/posts/${article.id}/`}>{article.data.title}</a></h2>
+    <PostMeta article={article} />
+    <p class="post-description">{article.data.description}</p>
+    <div class="post-footer">
+      <span>{words} words</span><span>|</span><span>{minutes} minute{minutes === 1 ? '' : 's'}</span>
+    </div>
+  </div>
+</article>
+

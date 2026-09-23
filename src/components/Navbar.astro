@@ -1,0 +1,37 @@
+---
+import Icon from './Icon.astro';
+import DisplaySettings from './DisplaySettings.astro';
+import SearchModal from './SearchModal.astro';
+
+const { pathname } = Astro.url;
+const isHome = pathname === '/';
+const isArchive = pathname.startsWith('/archive');
+const isAbout = pathname.startsWith('/about');
+---
+<header class="navbar">
+  <a href="/" class="logo"><Icon name="home" size={20} /><span>VOIDSTACK</span></a>
+  <nav class="nav-links" aria-label="Primary navigation">
+    <a href="/" class={isHome ? 'active' : ''}>Home</a><a
+      href="/archive/"
+      class={isArchive ? 'active' : ''}>Archive</a
+    ><a href="/about/" class={isAbout ? 'active' : ''}>About</a>
+  </nav>
+  <div class="navbar-actions">
+    <button class="icon-button" id="search-trigger" type="button" aria-label="Search">
+      <Icon name="search" />
+    </button>
+    <DisplaySettings />
+    <button class="icon-button theme-button" id="theme-toggle" type="button" aria-label="Toggle color theme">
+      <span class="theme-icon theme-icon-dark"><Icon name="moon" /></span>
+      <span class="theme-icon theme-icon-light"><Icon name="sun" /></span>
+    </button>
+  </div>
+</header>
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  <a href="/" class={isHome ? 'active' : ''}><Icon name="home" /><span>Home</span></a><a
+    href="/archive/"
+    class={isArchive ? 'active' : ''}><Icon name="file-text" /><span>Archive</span></a
+  ><a href="/about/" class={isAbout ? 'active' : ''}><Icon name="mail" /><span>About</span></a>
+</nav>
+<SearchModal />
+

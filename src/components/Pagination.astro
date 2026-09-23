@@ -1,0 +1,40 @@
+---
+interface Props {
+  page: {
+    currentPage: number;
+    lastPage: number;
+    url: { current: string; prev?: string; next?: string };
+  };
+}
+const { page } = Astro.props;
+const pages = Array.from({ length: page.lastPage }, (_, i) => i + 1);
+---
+{
+  page.lastPage > 1 && (
+    <nav class="pagination" aria-label="Pagination">
+      {page.url.prev ? (
+        <a class="page-link" href={page.url.prev} aria-label="Previous page">
+          ‹
+        </a>
+      ) : (
+        <span class="page-link disabled" aria-hidden="true">
+          ‹
+        </span>
+      )}
+      {pages.map((p) => (
+        <a class={`page-link ${p === page.currentPage ? 'active' : ''}`} href={p === 1 ? '/' : `/${p}/`}>
+          {p}
+        </a>
+      ))}
+      {page.url.next ? (
+        <a class="page-link" href={page.url.next} aria-label="Next page">
+          ›
+        </a>
+      ) : (
+        <span class="page-link disabled" aria-hidden="true">
+          ›
+        </span>
+      )}
+    </nav>
+  )
+}

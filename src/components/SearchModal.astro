@@ -1,0 +1,75 @@
+---
+import Icon from './Icon.astro';
+---
+<div class="search-overlay" id="search-overlay">
+  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search">
+    <div class="search-panel-header">
+      <strong>Search</strong>
+      <button class="icon-button" id="search-close" type="button" aria-label="Close search"><Icon name="close" /></button>
+    </div>
+    <div id="search"></div>
+    <p class="search-fallback" id="search-fallback" style="display: none;">
+      The search index is only generated for production builds. Run <code>npm run build</code> and then <code>npm run preview</code> to try search.
+    </p>
+  </div>
+</div>
+<script is:inline>
+  (function () {
+    const overlay = document.getElementById('search-overlay');
+    const trigger = document.getElementById('search-trigger');
+    const closeBtn = document.getElementById('search-close');
+    const fallback = document.getElementById('search-fallback');
+    let loaded = false;
+
+    function loadPagefind() {
+      if (loaded) return Promise.resolve();
+      loaded = true;
+      return Promise.all([
+        new Promise((resolve, reject) => {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = '/pagefind/pagefind-ui.css';
+          link.onload = resolve;
+          link.onerror = reject;
+          document.head.appendChild(link);
+        }),
+        new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = '/pagefind/pagefind-ui.js';
+          script.onload = resolve;
+          script.onerror = reject;
+          document.body.appendChild(script);
+        }),
+      ]).then(() => {
+        new window.PagefindUI({ element: '#search', showSubResults: true, showImages: false });
+      }).catch(() => {
+        if (fallback) fallback.style.display = 'block';
+      });
+    }
+
+    function openSearch() {
+      overlay?.classList.add('open');
+      loadPagefind();
+      window.setTimeout(() => {
+        const input = overlay?.querySelector('input');
+        input?.focus();
+      }, 60);
+    }
+    function closeSearch() {
+      overlay?.classList.remove('open');
+    }
+
+    trigger?.addEventListener('click', openSearch);
+    closeBtn?.addEventListener('click', closeSearch);
+    overlay?.addEventListener('click', (e) => {
+      if (e.target === overlay) closeSearch();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSearch();
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        openSearch();
+      }
+    });
+  })();
+</script>

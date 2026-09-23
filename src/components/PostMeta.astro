@@ -1,0 +1,32 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Icon from './Icon.astro';
+
+interface Props {
+  article: CollectionEntry<'articles'>;
+}
+const { article } = Astro.props;
+const dateLabel = article.data.publishedDate.toISOString().slice(0, 10);
+---
+<div class="post-meta">
+  <span class="meta-chip"><Icon name="calendar" size={14} /><span>{dateLabel}</span></span><span
+    class="meta-chip"
+    ><Icon name="book" size={14} /><a
+      href={`/archive/?category=${encodeURIComponent(article.data.category)}`}
+      >{article.data.category}</a
+    ></span
+  >
+  {
+    article.data.tags.length > 0 && (
+      <span class="meta-chip">
+        <Icon name="hash" size={14} />
+        {article.data.tags.map((tag, index) => (
+          <Fragment>
+            {index > 0 && <span class="sep">/</span>}
+            <a href={`/archive/?tag=${encodeURIComponent(tag)}`}>{tag}</a>
+          </Fragment>
+        ))}
+      </span>
+    )
+  }
+</div>

@@ -1,0 +1,87 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+
+const articles = (await getCollection('articles')).sort(
+  (a, b) => b.data.publishedDate.valueOf() - a.data.publishedDate.valueOf(),
+);
+
+const groups = new Map<number, CollectionEntry<'articles'>[]>();
+for (const article of articles) {
+  const year = article.data.publishedDate.getUTCFullYear();
+  if (!groups.has(year)) groups.set(year, []);
+  groups.get(year)!.push(article);
+}
+const years = [...groups.keys()].sort((a, b) => b - a);
+---
+<PageLayout title="Archive | VoidStack" description="All articles grouped by year.">
+  <div class="filter-banner" id="archive-filter-banner">
+    <span id="archive-filter-text"></span>
+    <a href="/archive/">Clear filter ✕</a>
+  </div>
+  {
+    years.length === 0 ? (
+      <p class="archive-empty">No articles yet.</p>
+    ) : (
+      <div class="timeline">
+        {years.map((year) => {
+          const posts = groups.get(year)!;
+          return (
+            <div class="timeline-group">
+              <div class="timeline-year-label">
+                <span class="timeline-dot" />
+                <strong>{year}</strong>
+                <span class="timeline-line" />
+                <span class="timeline-count">
+                  {posts.length} post{posts.length === 1 ? '' : 's'}
+                </span>
+              </div>
+              <div class="timeline-posts">
+                {posts.map((post) => (
+                  <a
+                    class="timeline-post"
+                    href={`/posts/${post.id}/`}
+                    data-category={post.data.category}
+                    data-tags={post.data.tags.join(',')}
+                  >
+                    <span class="timeline-date">{post.data.publishedDate.toISOString().slice(5, 10)}</span>
+                    <span class="timeline-title">{post.data.title}</span>
+                    <span class="timeline-tags">{post.data.tags.map((t) => `#${t}`).join(' ')}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    )
+  }
+</PageLayout>
+<script is:inline>
+  (function () {
+    const params = new URLSearchParams(window.location.search);
+    const category = params.get('category');
+    const tag = params.get('tag');
+    if (!category && !tag) return;
+
+    const banner = document.getElementById('archive-filter-banner');
+    const text = document.getElementById('archive-filter-text');
+    if (banner && text) {
+      text.textContent = category ? `Showing posts in "${category}"` : `Showing posts tagged "${tag}"`;
+      banner.classList.add('visible');
+    }
+
+    document.querySelectorAll('.timeline-post').forEach((el) => {
+      const postCategory = el.getAttribute('data-category') || '';
+      const postTags = (el.getAttribute('data-tags') || '').split(',');
+      const matches = category ? postCategory === category : tag ? postTags.includes(tag) : true;
+      if (!matches) el.style.display = 'none';
+    });
+
+    document.querySelectorAll('.timeline-group').forEach((group) => {
+      const visiblePosts = group.querySelectorAll('.timeline-post:not([style*="display: none"])');
+      if (visiblePosts.length === 0) group.style.display = 'none';
+    });
+  })();
+</script>

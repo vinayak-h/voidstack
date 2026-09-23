@@ -1,0 +1,71 @@
+---
+import Icon from './Icon.astro';
+
+const KEY = 'voidstack-hue';
+const DEFAULT_HUE = 227;
+---
+<div class="popover-wrapper" id="display-settings">
+  <button class="icon-button" id="display-settings-trigger" type="button" aria-label="Display settings" aria-expanded="false">
+    <Icon name="palette" />
+  </button>
+  <div class="popover" id="display-settings-popover" role="dialog" aria-label="Display settings">
+    <div class="popover-row">
+      <span>Theme Color</span>
+      <button type="button" id="hue-reset">Reset</button>
+    </div>
+    <input type="range" min="0" max="360" step="1" value={DEFAULT_HUE} class="hue-slider" id="hue-slider" aria-label="Theme color hue" />
+    <div class="popover-row" style="margin-top: 10px; margin-bottom: 0;">
+      <span>Hue</span>
+      <span class="popover-value" id="hue-value">{DEFAULT_HUE}</span>
+    </div>
+  </div>
+</div>
+<script define:vars={{ KEY, DEFAULT_HUE }}>
+  (function () {
+    const root = document.documentElement;
+    const slider = document.getElementById('hue-slider');
+    const valueLabel = document.getElementById('hue-value');
+    const trigger = document.getElementById('display-settings-trigger');
+    const popover = document.getElementById('display-settings-popover');
+    const resetBtn = document.getElementById('hue-reset');
+
+    function applyHue(hue) {
+      root.style.setProperty('--hue', String(hue));
+      if (valueLabel) valueLabel.textContent = String(hue);
+      if (slider) slider.value = String(hue);
+    }
+
+    const saved = localStorage.getItem(KEY);
+    applyHue(saved ? Number(saved) : DEFAULT_HUE);
+
+    slider?.addEventListener('input', () => {
+      const hue = Number(slider.value);
+      applyHue(hue);
+      localStorage.setItem(KEY, String(hue));
+    });
+
+    resetBtn?.addEventListener('click', () => {
+      applyHue(DEFAULT_HUE);
+      localStorage.removeItem(KEY);
+    });
+
+    trigger?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = popover.classList.toggle('open');
+      trigger.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!popover.contains(e.target) && e.target !== trigger) {
+        popover.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        popover.classList.remove('open');
+        trigger.setAttribute('aria-expanded', 'false');
+      }
+    });
+  })();
+</script>
