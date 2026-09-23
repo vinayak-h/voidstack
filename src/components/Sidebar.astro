@@ -7,6 +7,7 @@ const articles = await getCollection('articles');
 const authorName: string = import.meta.env.PUBLIC_AUTHOR_NAME || 'Vinayak Hegde';
 const tagline = import.meta.env.PUBLIC_AUTHOR_TAGLINE || 'Breaking abstractions. Understanding systems.';
 const githubUrl = import.meta.env.PUBLIC_GITHUB_URL || 'https://github.com/vinayak-h';
+const linkedinUrl = import.meta.env.PUBLIC_LINKEDIN_URL || '';
 const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL || 'your-hegdevinayak008@gmail.com';
 
 const initials = authorName
@@ -34,7 +35,9 @@ const tags = [...tagCounts.keys()].sort((a, b) => a.localeCompare(b));
     <a href="/about/" class="profile-name">{authorName}</a>
     <p class="profile-tagline">{tagline}</p>
     <div class="profile-links">
-      <a href={githubUrl} target="_blank" rel="noopener noreferrer" aria-label="GitHub"><Icon name="github" /></a><a
+      <a href={githubUrl} target="_blank" rel="noopener noreferrer" aria-label="GitHub"><Icon name="github" /></a>
+      {linkedinUrl && <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><Icon name="linkedin" /></a>}
+      <a
         href={`mailto:${contactEmail}`}
         aria-label="Email"><Icon name="mail" /></a>
     </div>
