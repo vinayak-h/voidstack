@@ -2,7 +2,7 @@
 /**
  * ArticlesPerPage Component
  * Provides a segmented control for users to select how many articles to display per page.
- * Selection is persisted to localStorage and automatically reloads the page.
+ * Uses client-side filtering when all articles are loaded from the server.
  */
 
 const PAGE_SIZE_OPTIONS = [5, 10, 15] as const;
@@ -49,7 +49,7 @@ const DEFAULT_SIZE = 5;
       }
     };
 
-    // Initialize button states and set up filtering
+    // Initialize button states
     const currentSize = getStoredPageSize();
     document.querySelectorAll('.articles-per-page-btn').forEach((btn) => {
       const size = parseInt(btn.getAttribute('data-size'), 10);

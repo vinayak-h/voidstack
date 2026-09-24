@@ -11,7 +11,9 @@ export const getStaticPaths = (async ({ paginate }) => {
   const articles = (await getCollection('articles')).sort(
     (a, b) => b.data.publishedDate.valueOf() - a.data.publishedDate.valueOf(),
   );
-  return paginate(articles, { pageSize: 15 });
+  // Use pageSize: 50 to ensure all articles are available on the home page
+  // Client-side JS will handle filtering based on user's selected page size preference
+  return paginate(articles, { pageSize: 50 });
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props as { page: Page<CollectionEntry<'articles'>> };
