@@ -609,38 +609,45 @@ body.light-theme .theme-icon-light {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-top: 32px;
+  gap: 4px;
+  margin-top: 24px;
+  padding: 16px 0;
+  flex-wrap: wrap;
 }
 
 .page-link {
-  display: grid;
-  place-items: center;
-  min-width: 36px;
-  height: 36px;
-  padding: 0 10px;
-  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 4px;
   border: 1px solid var(--border);
   color: var(--text-soft);
   text-decoration: none;
-  font-size: 13px;
-  font-weight: 600;
-  transition: border-color .15s ease, color .15s ease;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.page-link:hover {
-  border-color: var(--accent-soft);
+.page-link:hover:not(.disabled):not(.active) {
+  border-color: var(--accent);
   color: var(--accent);
+  background: var(--bg-hover);
 }
 
 .page-link.active {
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
+  font-weight: 600;
 }
 
 .page-link.disabled {
-  opacity: .35;
+  opacity: 0.4;
+  cursor: not-allowed;
   pointer-events: none;
 }
 

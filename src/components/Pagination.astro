@@ -14,8 +14,9 @@ const pages = Array.from({ length: page.lastPage }, (_, i) => i + 1);
     class="page-link prev-button"
     data-pagination-action="prev"
     aria-label="Previous page"
+    title="Previous page"
   >
-    ‹
+    ← Prev
   </button>
   <div class="page-numbers">
     {pages.map((p) => (
@@ -23,6 +24,7 @@ const pages = Array.from({ length: page.lastPage }, (_, i) => i + 1);
         class={`page-link ${p === page.currentPage ? 'active' : ''}`}
         data-page={p}
         aria-current={p === page.currentPage ? 'page' : 'false'}
+        title={`Go to page ${p}`}
       >
         {p}
       </button>
@@ -32,8 +34,9 @@ const pages = Array.from({ length: page.lastPage }, (_, i) => i + 1);
     class="page-link next-button"
     data-pagination-action="next"
     aria-label="Next page"
+    title="Next page"
   >
-    ›
+    Next →
   </button>
 </nav>
 
