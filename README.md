@@ -1,122 +1,82 @@
 # VoidStack
 
+A simple personal engineering blog built with [Astro](https://astro.build).
+
 > Breaking abstractions. Understanding systems.
 
-A personal engineering portfolio and blog built with [Astro](https://astro.build) — designed to explore cloud infrastructure, backend systems, and software architecture through practical examples and deep technical writing.
+## Features
 
-## 🚀 Features
+- **Fast** — Built with Astro for speed
+- **Dark/Light Mode** — Toggle between themes
+- **Articles** — Technical writing on engineering topics
+- **Responsive** — Works on all devices
 
-- **Fast & Minimal** — Built with Astro for optimal performance
-- **Dark/Light Theme** — Toggle between themes with persistent storage
-- **Article System** — Technical articles with categorization and publishing dates
-- **Project Showcase** — Display of selected projects and work
-- **Responsive Design** — Mobile-first, works across all screen sizes
-- **SEO Optimized** — Open Graph meta tags, canonical URLs, and semantic HTML
+## Quick Start
 
-## 📁 Project Structure
+### 1. Install
 
-```
-├── src/
-│   ├── components/        # Reusable Astro components
-│   ├── content/           # Markdown articles and metadata
-│   ├── layouts/           # Page layouts with SEO support
-│   ├── pages/             # Routes (index, articles, 404)
-│   └── styles/            # Global CSS with theme system
-├── public/                # Static assets
-├── .env.example           # Environment variables template
-├── astro.config.mjs       # Astro configuration
-└── package.json           # Dependencies and scripts
-```
-
-## 🛠️ Getting Started
-
-### Prerequisites
-
-- Node.js ≥ 22.12.0
-- npm or your preferred package manager
-
-### Installation
-
-1. Clone the repository
 ```bash
-git clone <repository-url>
+git clone https://github.com/vinayak-h/voidstack.git
 cd voidstack
-```
-
-2. Install dependencies
-```bash
 npm install
 ```
 
-3. Set up environment variables
-```bash
-cp .env.example .env
-# Edit .env with your contact email and GitHub URL
-```
+### 2. Run
 
-4. Start the development server
 ```bash
 npm run dev
 ```
 
-The site will be available at `http://localhost:4321`
+Open [http://localhost:4321](http://localhost:4321) in your browser.
 
-## 📝 Commands
+### 3. Build
 
-| Command | Action |
-| --- | --- |
-| `npm run dev` | Start local dev server |
-| `npm run build` | Build production site to `./dist/` |
-| `npm run preview` | Preview production build locally |
-| `npm run astro` | Run Astro CLI commands |
+```bash
+npm run build
+```
 
-## ✍️ Writing Articles
+## Write an Article
 
-Add new articles as Markdown files in `src/content/articles/` with YAML frontmatter:
+Create a new Markdown file in `src/content/articles/`:
 
 ```markdown
 ---
-title: 'Article Title'
-description: 'Brief description'
-category: 'CATEGORY'
-publishedDate: '2024-01-15'
-featured: false
+title: "Your Article Title"
+description: "A short description"
+category: "BACKEND"
+publishedDate: "2026-09-24"
+tags:
+  - tag1
+  - tag2
 ---
 
-# Your article content here...
+# Your content here
+
+Write your article in Markdown.
 ```
 
 **Required fields:**
-- `title` (string) — Article title
-- `description` (string) — Short description for preview
-- `category` (string) — Content category (e.g., CLOUD, BACKEND, AI)
-- `publishedDate` (date) — Publication date in `YYYY-MM-DD` format
+- `title` — Article title
+- `description` — Short summary
+- `category` — Topic (e.g., BACKEND, CLOUD, AI)
+- `publishedDate` — Date in YYYY-MM-DD format
 
-**Optional fields:**
-- `featured` (boolean) — Mark as featured article (default: false)
+**Optional:**
+- `tags` — List of tags
+- `featured` — Mark as featured (true/false)
 
-## 🎨 Customization
+## Commands
 
-### Environment Variables
+```bash
+npm run dev       # Start dev server
+npm run build     # Build for production
+npm run preview   # Preview production build
+```
 
-Edit `.env` to customize:
-- `PUBLIC_CONTACT_EMAIL` — Email for contact section
-- `PUBLIC_GITHUB_URL` — GitHub profile link
-- `PUBLIC_SITE_URL` — Site URL for SEO (default: http://localhost:4321)
-- `PUBLIC_SITE_TITLE` — Site title
+## Deployed On
 
-### Theme
+[Vercel](https://vercel.com) — Auto-deploys on push to main.
 
-The site uses CSS custom properties for theming. Edit `src/styles/global.css` to customize colors:
-- Dark theme (default) — `:root` variables
-- Light theme — `:global(body.light-theme)` overrides
+## License
 
-## 📚 Learn More
-
-- [Astro Documentation](https://docs.astro.build)
-- [Markdown with Astro](https://docs.astro.build/en/guides/content-collections/)
-- [Astro Components](https://docs.astro.build/en/basics/astro-components/)
-
-## 📄 License
-
-This project is open source and available under the MIT License.
+Open source and available on [GitHub](https://github.com/vinayak-h/voidstack).
