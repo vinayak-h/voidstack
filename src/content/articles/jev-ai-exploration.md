@@ -1,18 +1,18 @@
 ---
-title: "Exploring Jev: An AI Model Built to Make Decisions, Not Conversations"
-description: "My first exploration of Jev, TypeSafe AI's System One decision model, and why structured AI decisions are interesting for software engineers."
+title: "Exploring JEV: An AI Model Built to Make Decisions, Not Conversations"
+description: "My first exploration of JEV, TypeSafe AI's System One decision model, and why structured AI decisions are interesting for software engineers."
 category: "AI"
 publishedDate: "2026-09-24"
 tags:
   - ai
-  - jev
+  - JEV
   - typesafe
   - machine-learning
   - decision-models
   - agents
 ---
 
-# Exploring Jev: An AI Model Built to Make Decisions, Not Conversations
+# Exploring JEV: An AI Model Built to Make Decisions, Not Conversations
 
 I've spent a lot of time around the usual AI workflow: send a prompt to a language model, get some text back, and then figure out how my application should use that response.
 
@@ -35,21 +35,21 @@ Customer message
 Route to billing team
 ```
 
-That is what made me interested in **Jev**, TypeSafe AI's first System One model.
+That is what made me interested in **JEV**, TypeSafe AI's first System One model.
 
-Jev takes a different approach from a conventional conversational model. Instead of generating a paragraph for an application to interpret, you give it a state and focused questions, and it returns structured answers that software can work with directly. TypeSafe describes the basic flow as **state → question → decision → action**. citeturn0search0
+JEV takes a different approach from a conventional conversational model. Instead of generating a paragraph for an application to interpret, you give it a state and focused questions, and it returns structured answers that software can work with directly. TypeSafe describes the basic flow as **state → question → decision → action**. citeturn0search0
 
-This article is my exploration of that idea: what Jev is, where it fits, where it doesn't, and why I think the concept is worth understanding as a backend engineer.
+This article is my exploration of that idea: what JEV is, where it fits, where it doesn't, and why I think the concept is worth understanding as a backend engineer.
 
 ---
 
-## So, what exactly is Jev?
+## So, what exactly is JEV?
 
-Jev is TypeSafe AI's first **System One** model. It was introduced in September 2026 as a model designed around structured decision-making rather than open-ended text generation. citeturn0news13turn0search0
+JEV is TypeSafe AI's first **System One** model. It was introduced in September 2026 as a model designed around structured decision-making rather than open-ended text generation. citeturn0news13turn0search0
 
 The simplest way I can think about it is:
 
-> **An LLM can generate an answer. Jev is designed to return a decision that software can act on.**
+> **An LLM can generate an answer. JEV is designed to return a decision that software can act on.**
 
 For example, imagine a support application receiving this message:
 
@@ -79,13 +79,13 @@ That is a bounded decision.
 
 I don't need an essay. I need a machine-readable result.
 
-That is the space Jev is targeting. citeturn0search0
+That is the space JEV is targeting. citeturn0search0
 
 ---
 
 ## The interesting part: the model doesn't decide the shape of the answer
 
-This is probably the first thing I find interesting about Jev from an engineering perspective.
+This is probably the first thing I find interesting about JEV from an engineering perspective.
 
 With a normal LLM, I might write something like:
 
@@ -111,7 +111,7 @@ Do I need to retry?
 
 Do I need to validate the response?
 
-With Jev, the question itself defines the expected shape of the decision. TypeSafe describes three core question types: **Choice, Score, and Noul**. citeturn0search0turn0search4
+With JEV, the question itself defines the expected shape of the decision. TypeSafe describes three core question types: **Choice, Score, and Noul**. citeturn0search0turn0search4
 
 That changes the programming model from:
 
@@ -133,7 +133,7 @@ That is a subtle difference, but for software systems it can be significant.
 
 The first primitive is **Choice**.
 
-You provide a set of possible options, and Jev selects among them.
+You provide a set of possible options, and JEV selects among them.
 
 For example:
 
@@ -208,7 +208,7 @@ The model provides the judgment.
 
 **My code owns the action.**
 
-TypeSafe documents Score as one of Jev's three typed question primitives. citeturn0search0
+TypeSafe documents Score as one of JEV's three typed question primitives. citeturn0search0
 
 ---
 
@@ -243,7 +243,7 @@ The model doesn't have to decide what the business should do with the probabilit
 
 The application does.
 
-That separation between **judgement** and **action** is one of the ideas I find most interesting about Jev.
+That separation between **judgement** and **action** is one of the ideas I find most interesting about JEV.
 
 ---
 
@@ -283,15 +283,15 @@ QUESTIONS
 └── human_review → Noul
 ```
 
-Jev is designed to answer these typed questions against the same state. citeturn0search4
+JEV is designed to answer these typed questions against the same state. citeturn0search4
 
 From a backend architecture perspective, that is much more interesting to me than simply having another chatbot API.
 
 ---
 
-## Where does Jev fit next to an LLM?
+## Where does JEV fit next to an LLM?
 
-I don't see Jev as a replacement for general-purpose language models.
+I don't see JEV as a replacement for general-purpose language models.
 
 The two systems solve different problems.
 
@@ -310,7 +310,7 @@ A simplified architecture could look like this:
                      │
                      ▼
               ┌──────────────┐
-              │     Jev      │
+              │     JEV      │
               │  decisions   │
               │ classification│
               │    scoring   │
@@ -326,9 +326,9 @@ A simplified architecture could look like this:
 
 The LLM can handle the parts that need flexible generation or reasoning.
 
-Jev can handle bounded decisions inside the workflow.
+JEV can handle bounded decisions inside the workflow.
 
-TypeSafe itself describes this as keeping generative models and ordinary software in the loop rather than trying to use Jev for writing, arithmetic, permissions, or every other task. citeturn0search0
+TypeSafe itself describes this as keeping generative models and ordinary software in the loop rather than trying to use JEV for writing, arithmetic, permissions, or every other task. citeturn0search0
 
 That distinction is important.
 
@@ -364,14 +364,14 @@ Parse / validate
 Business logic
 ```
 
-Jev suggests another possibility:
+JEV suggests another possibility:
 
 ```text
 Request
    ↓
 Application state
    ↓
-Jev decision
+JEV decision
    ↓
 Typed result
    ↓
@@ -398,7 +398,7 @@ If I ask:
 Explain why this distributed system is failing.
 ```
 
-Jev is not the tool I would reach for.
+JEV is not the tool I would reach for.
 
 If I ask:
 
@@ -414,13 +414,13 @@ If I ask:
 Which incident category does this belong to?
 ```
 
-Now the problem starts looking like a Jev problem.
+Now the problem starts looking like a JEV problem.
 
 TypeSafe explicitly recommends using generative models for new text and keeping exact calculations and permissions in ordinary code. citeturn0search0
 
 So I think the interesting question isn't:
 
-> "Is Jev better than an LLM?"
+> "Is JEV better than an LLM?"
 
 It is:
 
@@ -430,7 +430,7 @@ It is:
 
 ## Speed and cost are part of the idea
 
-Jev is also positioned around low-latency, low-cost decision making. Current public descriptions put its typical response time in the tens-to-hundreds of milliseconds range, with TypeSafe describing roughly 70–500 ms for Jev responses. Public descriptions also report input pricing around $0.042 per million tokens, with output decision tokens free under the stated pricing model. citeturn0search4turn0search0
+JEV is also positioned around low-latency, low-cost decision making. Current public descriptions put its typical response time in the tens-to-hundreds of milliseconds range, with TypeSafe describing roughly 70–500 ms for JEV responses. Public descriptions also report input pricing around $0.042 per million tokens, with output decision tokens free under the stated pricing model. citeturn0search4turn0search0
 
 I wouldn't take those numbers as a guarantee for every workload.
 
@@ -442,7 +442,7 @@ But the architectural idea makes sense: if the application needs a small structu
 
 ## A small experiment I want to build
 
-The most useful way for me to understand Jev isn't to read ten articles about it.
+The most useful way for me to understand JEV isn't to read ten articles about it.
 
 It's to build something.
 
@@ -481,7 +481,7 @@ Priority: 3.2
 Then Spring Boot takes over:
 
 ```text
-Jev result
+JEV result
     ↓
 Spring Boot
     ↓
@@ -501,7 +501,7 @@ LLM-only
 versus:
 
 ```text
-LLM + Jev + application logic
+LLM + JEV + application logic
 ```
 
 That comparison would probably teach me more than simply calling the API once.
@@ -546,11 +546,11 @@ These are the things that matter once an AI model becomes part of a real system.
 
 ## My current mental model
 
-After looking at Jev, this is the simplest way I currently understand the difference:
+After looking at JEV, this is the simplest way I currently understand the difference:
 
 ```mermaid
 graph TD
-    A["<b>Generative Model</b><br/>━━━━━━━━━━━<br/>Write<br/>Explain<br/>Reason<br/>Create"] -->|Flexible Output| B["<b>Jev</b><br/>━━━━━━━━━━━<br/>Choose<br/>Score<br/>Classify<br/>Gate"]
+    A["<b>Generative Model</b><br/>━━━━━━━━━━━<br/>Write<br/>Explain<br/>Reason<br/>Create"] -->|Flexible Output| B["<b>JEV</b><br/>━━━━━━━━━━━<br/>Choose<br/>Score<br/>Classify<br/>Gate"]
     B -->|Typed Decision| C["<b>Normal Software</b><br/>━━━━━━━━━━━━━<br/>Business Rules<br/>Databases<br/>APIs<br/>Permissions<br/>Actions"]
     
     style A fill:#4f46e5,stroke:#3730a3,color:#fff,stroke-width:2px
@@ -558,7 +558,7 @@ graph TD
     style C fill:#10b981,stroke:#059669,color:#fff,stroke-width:2px
 ```
 
-The interesting part isn't that Jev is "another AI model."
+The interesting part isn't that JEV is "another AI model."
 
 The interesting part is the attempt to make AI **a typed decision component inside software**.
 
@@ -568,11 +568,11 @@ That's a very different mental model from building an application around a chatb
 
 ## Final thoughts
 
-I'm still at the exploration stage with Jev, so I don't want to pretend that reading the documentation is enough to prove where it belongs in production systems.
+I'm still at the exploration stage with JEV, so I don't want to pretend that reading the documentation is enough to prove where it belongs in production systems.
 
 The real test is going to be implementation.
 
-I want to take a real backend workflow, define a small set of decisions, run those decisions through Jev, measure the results, and see where the model actually helps.
+I want to take a real backend workflow, define a small set of decisions, run those decisions through JEV, measure the results, and see where the model actually helps.
 
 For me, that's the interesting part of exploring new AI technology.
 
@@ -584,14 +584,14 @@ But:
 
 > **"What problem does this solve, where does it fit in an actual system, and what happens when I put it under real constraints?"**
 
-That's what I want to find out with Jev.
+That's what I want to find out with JEV.
 
 ---
 
 ## References
 
-- [TypeSafe AI — What is Jev?](https://www.typesafeai.org/jev)
-- [Jev — TypeSafe AI](https://www.typesafe.ai/)
-- [Made with Jev — What is Jev?](https://madewithjev.com/what-is-jev)
+- [TypeSafe AI — What is JEV?](https://www.typesafeai.org/JEV)
+- [JEV — TypeSafe AI](https://www.typesafe.ai/)
+- [Made with JEV — What is JEV?](https://madewithJEV.com/what-is-JEV)
 
-*This article is an exploration of Jev based on publicly available information as of September 24, 2026. Performance, pricing, availability, and API behavior can change as the product evolves.*
+*This article is an exploration of JEV based on publicly available information as of September 24, 2026. Performance, pricing, availability, and API behavior can change as the product evolves.*
