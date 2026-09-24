@@ -63,8 +63,8 @@ const DEFAULT_SIZE = 5;
       btn.addEventListener('click', () => {
         const newSize = parseInt(btn.getAttribute('data-size'), 10);
         setStoredPageSize(newSize);
-        // Navigate to archive page (resets to page 1)
-        window.location.href = '/archive/';
+        // Navigate to home page (resets to page 1)
+        window.location.href = '/';
       });
     });
   })();
