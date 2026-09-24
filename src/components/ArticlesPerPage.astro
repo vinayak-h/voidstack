@@ -49,7 +49,7 @@ const DEFAULT_SIZE = 5;
       }
     };
 
-    // Initialize button states
+    // Initialize button states and set up filtering
     const currentSize = getStoredPageSize();
     document.querySelectorAll('.articles-per-page-btn').forEach((btn) => {
       const size = parseInt(btn.getAttribute('data-size'), 10);
@@ -58,13 +58,37 @@ const DEFAULT_SIZE = 5;
       btn.classList.toggle('active', isActive);
     });
 
+    // Apply filtering based on stored preference
+    function applyArticleFiltering() {
+      const storedSize = getStoredPageSize();
+      const articles = document.querySelectorAll('.post-list .post-card');
+      articles.forEach((article, index) => {
+        if (index < storedSize) {
+          article.style.display = '';
+        } else {
+          article.style.display = 'none';
+        }
+      });
+    }
+    
+    // Apply filtering on page load
+    applyArticleFiltering();
+
     // Handle button clicks
     document.querySelectorAll('.articles-per-page-btn').forEach((btn) => {
       btn.addEventListener('click', () => {
         const newSize = parseInt(btn.getAttribute('data-size'), 10);
         setStoredPageSize(newSize);
-        // Navigate to home page (resets to page 1)
-        window.location.href = '/';
+        
+        // Update button states
+        document.querySelectorAll('.articles-per-page-btn').forEach((b) => {
+          const size = parseInt(b.getAttribute('data-size'), 10);
+          b.classList.toggle('active', size === newSize);
+          b.setAttribute('aria-pressed', size === newSize);
+        });
+        
+        // Apply filtering
+        applyArticleFiltering();
       });
     });
   })();
