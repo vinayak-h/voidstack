@@ -10,7 +10,7 @@ export const getStaticPaths = (async ({ paginate }) => {
   const articles = (await getCollection('articles')).sort(
     (a, b) => b.data.publishedDate.valueOf() - a.data.publishedDate.valueOf(),
   );
-  return paginate(articles, { pageSize: 6 });
+  return paginate(articles, { pageSize: 5 });
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props as { page: Page<CollectionEntry<'articles'>> };
