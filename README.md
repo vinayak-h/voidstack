@@ -44,7 +44,7 @@ Create a new Markdown file in `src/content/articles/`:
 title: "Your Article Title"
 description: "A short description"
 category: "BACKEND"
-publishedDate: "2026-09-24"
+publishedDate: "yyyy-mm-dd"
 tags:
   - tag1
   - tag2
