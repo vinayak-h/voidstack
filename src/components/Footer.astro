@@ -1,11 +1,40 @@
 ---
 const year = new Date().getFullYear();
 ---
-<footer class="footer">
-  <span>© {year} VoidStack. All Rights Reserved.</span><span>/</span><a href="/rss.xml">RSS</a><span
-    >/</span
-  ><a href="/sitemap.xml">Sitemap</a><span>·</span><span
-    >Built with <a href="https://astro.build" target="_blank" rel="noopener noreferrer">Astro</a></span
-  >
-</footer>
 
+<footer class="footer">
+	<div class="footer-left">
+		<span>© {year} VoidStack</span>
+	</div>
+
+	<nav class="footer-links" aria-label="Footer navigation">
+		<a href="/rss.xml">RSS</a>
+		<span aria-hidden="true">/</span>
+		<a href="/sitemap.xml">Sitemap</a>
+		<span aria-hidden="true">/</span>
+		<a
+			href="https://github.com/vinayak-h"
+			target="_blank"
+			rel="noopener noreferrer"
+		>
+			GitHub
+		</a>
+	</nav>
+
+	<div class="footer-built">
+		<span>Built with</span>
+		<a
+			href="https://astro.build"
+			target="_blank"
+			rel="noopener noreferrer"
+		>
+			<img
+				src="/astro.svg"
+				alt="Astro"
+				width="16"
+				height="16"
+			/>
+			Astro
+		</a>
+	</div>
+</footer>

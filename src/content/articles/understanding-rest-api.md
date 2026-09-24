@@ -3,7 +3,7 @@ title: 'Understanding What Happens Inside a REST API'
 description: 'A practical look at the journey of an HTTP request from client to controller and database.'
 category: 'BACKEND'
 tags: ['rest', 'api', 'http', 'backend']
-publishedDate: '2026-09-23'
+publishedDate: '2025-12-10'
 featured: true
 ---
 
