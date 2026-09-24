@@ -1,74 +1,109 @@
 ---
-import { getCollection } from 'astro:content';
-import Icon from './Icon.astro';
+import { getCollection } from "astro:content";
+import Icon from "./Icon.astro";
 
-const articles = await getCollection('articles');
+const articles = await getCollection("articles");
 
-const authorName: string = import.meta.env.PUBLIC_AUTHOR_NAME || 'Vinayak Hegde';
-const tagline = import.meta.env.PUBLIC_AUTHOR_TAGLINE || 'Breaking abstractions. Understanding systems.';
-const githubUrl = import.meta.env.PUBLIC_GITHUB_URL || 'https://github.com/vinayak-h';
-const linkedinUrl = import.meta.env.PUBLIC_LINKEDIN_URL || '';
-const contactEmail = import.meta.env.PUBLIC_CONTACT_EMAIL || 'hegdevinayak008@gmail.com';
+const authorName: string =
+    import.meta.env.PUBLIC_AUTHOR_NAME || "Vinayak Hegde";
+const tagline =
+    import.meta.env.PUBLIC_AUTHOR_TAGLINE ||
+    "Breaking abstractions. Understanding systems.";
+const githubUrl =
+    import.meta.env.PUBLIC_GITHUB_URL || "https://github.com/vinayak-h";
+const linkedinUrl = import.meta.env.PUBLIC_LINKEDIN_URL || "";
+const contactEmail =
+    import.meta.env.PUBLIC_CONTACT_EMAIL || "hegdevinayak008@gmail.com";
 
 const initials = authorName
-  .split(' ')
-  .filter(Boolean)
-  .map((part: string) => part[0])
-  .join('')
-  .slice(0, 2)
-  .toUpperCase();
+    .split(" ")
+    .filter(Boolean)
+    .map((part: string) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
 const categoryCounts = new Map<string, number>();
 const tagCounts = new Map<string, number>();
 for (const article of articles) {
-  categoryCounts.set(article.data.category, (categoryCounts.get(article.data.category) ?? 0) + 1);
-  for (const tag of article.data.tags) {
-    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
-  }
+    categoryCounts.set(
+        article.data.category,
+        (categoryCounts.get(article.data.category) ?? 0) + 1,
+    );
+    for (const tag of article.data.tags) {
+        tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+    }
 }
-const categories = [...categoryCounts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+const categories = [...categoryCounts.entries()].sort((a, b) =>
+    a[0].localeCompare(b[0]),
+);
 const tags = [...tagCounts.keys()].sort((a, b) => a.localeCompare(b));
 ---
+
 <aside class="sidebar">
-  <div class="profile-card">
-    <a href="/about/" class="profile-avatar" aria-label="Go to About page">{initials}</a>
-    <a href="/about/" class="profile-name">{authorName}</a>
-    <p class="profile-tagline">{tagline}</p>
-    <div class="profile-links">
-      <a href={githubUrl} target="_blank" rel="noopener noreferrer" aria-label="GitHub"><Icon name="github" /></a>
-      {linkedinUrl && <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><Icon name="linkedin" /></a>}
-      <a
-        href={`mailto:${contactEmail}`}
-        aria-label="Email"><Icon name="mail" /></a>
+    <div class="profile-card">
+        <a href="/about/" class="profile-avatar" aria-label="Go to About page">
+            <img src="/images/88961285.jpg" alt={authorName} />
+        </a>
+        <a href="/about/" class="profile-name">{authorName}</a>
+        <p class="profile-tagline">{tagline}</p>
+        <div class="profile-links">
+            <a
+                href={githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"><Icon name="github" /></a
+            >
+            {
+                linkedinUrl && (
+                    <a
+                        href={linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="LinkedIn"
+                    >
+                        <Icon name="linkedin" />
+                    </a>
+                )
+            }
+            <a href={`mailto:${contactEmail}`} aria-label="Email"
+                ><Icon name="mail" /></a
+            >
+        </div>
     </div>
-  </div>
-  {
-    categories.length > 0 && (
-      <div class="widget">
-        <h2 class="widget-title">Categories</h2>
-        <div class="category-list">
-          {categories.map(([category, count]) => (
-            <a class="category-pill" href={`/archive/?category=${encodeURIComponent(category)}`}>
-              <span>{category}</span>
-              <span class="count">{count}</span>
-            </a>
-          ))}
-        </div>
-      </div>
-    )
-  }
-  {
-    tags.length > 0 && (
-      <div class="widget">
-        <h2 class="widget-title">Tags</h2>
-        <div class="tag-list">
-          {tags.map((tag) => (
-            <a class="tag-chip" href={`/archive/?tag=${encodeURIComponent(tag)}`}>
-              #{tag}
-            </a>
-          ))}
-        </div>
-      </div>
-    )
-  }
+    {
+        categories.length > 0 && (
+            <div class="widget">
+                <h2 class="widget-title">Categories</h2>
+                <div class="category-list">
+                    {categories.map(([category, count]) => (
+                        <a
+                            class="category-pill"
+                            href={`/archive/?category=${encodeURIComponent(category)}`}
+                        >
+                            <span>{category}</span>
+                            <span class="count">{count}</span>
+                        </a>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+    {
+        tags.length > 0 && (
+            <div class="widget">
+                <h2 class="widget-title">Tags</h2>
+                <div class="tag-list">
+                    {tags.map((tag) => (
+                        <a
+                            class="tag-chip"
+                            href={`/archive/?tag=${encodeURIComponent(tag)}`}
+                        >
+                            #{tag}
+                        </a>
+                    ))}
+                </div>
+            </div>
+        )
+    }
 </aside>
