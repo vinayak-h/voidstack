@@ -1,0 +1,142 @@
+---
+/**
+ * ArticlesPerPage Component
+ * Provides a segmented control for users to select how many articles to display per page.
+ * Selection is persisted to localStorage and automatically reloads the page.
+ */
+
+const PAGE_SIZE_OPTIONS = [5, 10, 15] as const;
+const DEFAULT_SIZE = 5;
+---
+
+<div class="articles-per-page-container">
+  <label class="articles-per-page-label">Articles per page:</label>
+  <div class="articles-per-page-control" role="radiogroup" aria-label="Articles per page">
+    {
+      PAGE_SIZE_OPTIONS.map((size) => (
+        <button
+          type="button"
+          class="articles-per-page-btn"
+          data-size={size}
+          aria-pressed={false}
+          title={`Display ${size} articles per page`}
+        >
+          {size}
+        </button>
+      ))
+    }
+  </div>
+</div>
+
+<script is:inline define:vars={{ DEFAULT_SIZE, PAGE_SIZE_OPTIONS }}>
+  (function () {
+    // Safely access localStorage
+    const getStoredPageSize = () => {
+      try {
+        const stored = localStorage.getItem('voidstack-articles-per-page');
+        const size = stored ? parseInt(stored, 10) : DEFAULT_SIZE;
+        return PAGE_SIZE_OPTIONS.includes(size) ? size : DEFAULT_SIZE;
+      } catch {
+        return DEFAULT_SIZE;
+      }
+    };
+
+    const setStoredPageSize = (size) => {
+      try {
+        localStorage.setItem('voidstack-articles-per-page', size.toString());
+      } catch {
+        // Silently fail in private browsing or when localStorage is unavailable
+      }
+    };
+
+    // Initialize button states
+    const currentSize = getStoredPageSize();
+    document.querySelectorAll('.articles-per-page-btn').forEach((btn) => {
+      const size = parseInt(btn.getAttribute('data-size'), 10);
+      const isActive = size === currentSize;
+      btn.setAttribute('aria-pressed', isActive);
+      btn.classList.toggle('active', isActive);
+    });
+
+    // Handle button clicks
+    document.querySelectorAll('.articles-per-page-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const newSize = parseInt(btn.getAttribute('data-size'), 10);
+        setStoredPageSize(newSize);
+        // Navigate to archive page (resets to page 1)
+        window.location.href = '/archive/';
+      });
+    });
+  })();
+</script>
+
+<style>
+  .articles-per-page-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 12px;
+    background: var(--surface, rgba(255, 255, 255, 0.02));
+    border-radius: 6px;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  }
+
+  .articles-per-page-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+    white-space: nowrap;
+  }
+
+  .articles-per-page-control {
+    display: flex;
+    gap: 4px;
+    background: var(--bg, rgba(255, 255, 255, 0.05));
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  }
+
+  .articles-per-page-btn {
+    padding: 6px 14px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 150ms ease-out;
+    position: relative;
+
+    &:hover:not(.active) {
+      background: var(--bg-hover, rgba(255, 255, 255, 0.08));
+      color: var(--text, rgba(255, 255, 255, 0.9));
+    }
+
+    &.active {
+      background: var(--accent, hsl(var(--hue, 210), 100%, 50%));
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(var(--accent-rgb, 59, 130, 246), 0.3);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--accent, hsl(var(--hue, 210), 100%, 50%));
+      outline-offset: 2px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .articles-per-page-container {
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .articles-per-page-btn {
+      padding: 5px 12px;
+      font-size: 0.85rem;
+    }
+  }
+</style>
