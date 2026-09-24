@@ -1,8 +1,8 @@
 ---
 /**
  * ArticlesPerPage Component
- * Provides a segmented control for users to select how many articles to display per page.
- * Uses client-side filtering when all articles are loaded from the server.
+ * Provides a segmented control for users to select articles per page.
+ * Uses client-side JavaScript to dynamically paginate articles.
  */
 
 const PAGE_SIZE_OPTIONS = [5, 10, 15] as const;
@@ -30,7 +30,6 @@ const DEFAULT_SIZE = 5;
 
 <script is:inline define:vars={{ DEFAULT_SIZE, PAGE_SIZE_OPTIONS }}>
   (function () {
-    // Safely access localStorage
     const getStoredPageSize = () => {
       try {
         const stored = localStorage.getItem('voidstack-articles-per-page');
@@ -44,53 +43,174 @@ const DEFAULT_SIZE = 5;
     const setStoredPageSize = (size) => {
       try {
         localStorage.setItem('voidstack-articles-per-page', size.toString());
+        localStorage.setItem('voidstack-current-page', '1');
+      } catch {}
+    };
+
+    const getStoredCurrentPage = () => {
+      try {
+        return parseInt(localStorage.getItem('voidstack-current-page') || '1', 10);
       } catch {
-        // Silently fail in private browsing or when localStorage is unavailable
+        return 1;
       }
     };
 
-    // Initialize button states
-    const currentSize = getStoredPageSize();
-    document.querySelectorAll('.articles-per-page-btn').forEach((btn) => {
-      const size = parseInt(btn.getAttribute('data-size'), 10);
-      const isActive = size === currentSize;
-      btn.setAttribute('aria-pressed', isActive);
-      btn.classList.toggle('active', isActive);
-    });
+    const setStoredCurrentPage = (page) => {
+      try {
+        localStorage.setItem('voidstack-current-page', page.toString());
+      } catch {}
+    };
 
-    // Apply filtering based on stored preference
-    function applyArticleFiltering() {
-      const storedSize = getStoredPageSize();
-      const articles = document.querySelectorAll('.post-list .post-card');
+    // Apply article pagination
+    function paginateArticles() {
+      const pageSize = getStoredPageSize();
+      const currentPage = getStoredCurrentPage();
+      const articles = Array.from(document.querySelectorAll('.post-list .post-card'));
+      
+      if (articles.length === 0) return;
+
+      const totalPages = Math.ceil(articles.length / pageSize);
+      const validPage = Math.min(Math.max(currentPage, 1), totalPages);
+      
+      const startIndex = (validPage - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+
+      // Hide/show articles based on current page
       articles.forEach((article, index) => {
-        if (index < storedSize) {
-          article.style.display = '';
-        } else {
-          article.style.display = 'none';
-        }
+        const shouldShow = index >= startIndex && index < endIndex;
+        article.style.display = shouldShow ? '' : 'none';
       });
-    }
-    
-    // Apply filtering on page load
-    applyArticleFiltering();
 
-    // Handle button clicks
-    document.querySelectorAll('.articles-per-page-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const newSize = parseInt(btn.getAttribute('data-size'), 10);
-        setStoredPageSize(newSize);
-        
-        // Update button states
-        document.querySelectorAll('.articles-per-page-btn').forEach((b) => {
-          const size = parseInt(b.getAttribute('data-size'), 10);
-          b.classList.toggle('active', size === newSize);
-          b.setAttribute('aria-pressed', size === newSize);
+      // Update pagination controls
+      updatePaginationUI(validPage, totalPages);
+    }
+
+    function updatePaginationUI(currentPage, totalPages) {
+      const pagination = document.querySelector('.pagination');
+      if (!pagination) return;
+
+      // Regenerate page number buttons
+      const pageNumbersDiv = pagination.querySelector('.page-numbers');
+      if (pageNumbersDiv) {
+        // Clear existing buttons but preserve data-page attribute structure
+        const existingBtns = Array.from(pageNumbersDiv.querySelectorAll('[data-page]'));
+        existingBtns.forEach(btn => btn.remove());
+
+        // Create new buttons for all pages
+        for (let i = 1; i <= totalPages; i++) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'page-link' + (i === currentPage ? ' active' : '');
+          btn.setAttribute('data-page', i.toString());
+          btn.setAttribute('aria-current', i === currentPage ? 'page' : 'false');
+          btn.textContent = i.toString();
+          
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            setStoredCurrentPage(i);
+            paginateArticles();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+          
+          pageNumbersDiv.appendChild(btn);
+        }
+      }
+
+      // Update prev/next buttons
+      const prevBtn = pagination.querySelector('[data-pagination-action="prev"]');
+      const nextBtn = pagination.querySelector('[data-pagination-action="next"]');
+      
+      if (prevBtn) {
+        prevBtn.disabled = currentPage === 1;
+        // Remove old listeners by cloning
+        const newPrevBtn = prevBtn.cloneNode(true);
+        prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+        newPrevBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (currentPage > 1) {
+            setStoredCurrentPage(currentPage - 1);
+            paginateArticles();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         });
-        
-        // Apply filtering
-        applyArticleFiltering();
+      }
+      
+      if (nextBtn) {
+        nextBtn.disabled = currentPage === totalPages;
+        // Remove old listeners by cloning
+        const newNextBtn = nextBtn.cloneNode(true);
+        nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+        newNextBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (currentPage < totalPages) {
+            setStoredCurrentPage(currentPage + 1);
+            paginateArticles();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+      }
+
+      // Hide pagination if only 1 page
+      pagination.style.display = totalPages > 1 ? '' : 'none';
+    }
+
+    // Initialize page size buttons
+    const initializePageSizeButtons = () => {
+      const currentSize = getStoredPageSize();
+      const buttons = document.querySelectorAll('.articles-per-page-btn');
+      
+      buttons.forEach((btn) => {
+        const size = parseInt(btn.getAttribute('data-size'), 10);
+        const isActive = size === currentSize;
+        btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        btn.classList.toggle('active', isActive);
       });
-    });
+    };
+
+    // Setup page size button event listeners
+    const setupPageSizeListeners = () => {
+      document.querySelectorAll('.articles-per-page-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const newSize = parseInt(btn.getAttribute('data-size'), 10);
+          setStoredPageSize(newSize);
+          
+          // Update button states
+          document.querySelectorAll('.articles-per-page-btn').forEach((b) => {
+            const size = parseInt(b.getAttribute('data-size'), 10);
+            const isActive = size === newSize;
+            b.classList.toggle('active', isActive);
+            b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+          });
+          
+          // Re-paginate with new page size
+          paginateArticles();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+      });
+    };
+
+    // Initialize on page load
+    const initializeWhenReady = () => {
+      const articles = document.querySelectorAll('.post-list .post-card');
+      const pagination = document.querySelector('.pagination');
+      const buttons = document.querySelectorAll('.articles-per-page-btn');
+      
+      if (articles.length > 0 && pagination && buttons.length > 0) {
+        initializePageSizeButtons();
+        setupPageSizeListeners();
+        paginateArticles();
+      } else {
+        // Retry if elements not ready yet
+        setTimeout(initializeWhenReady, 100);
+      }
+    };
+
+    // Start initialization
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeWhenReady);
+    } else {
+      initializeWhenReady();
+    }
   })();
 </script>
 
