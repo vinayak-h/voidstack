@@ -903,6 +903,34 @@ body.light-theme .theme-icon-light {
   border-radius: 8px;
 }
 
+.prose table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.prose th,
+.prose td {
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+  border: 1px solid var(--border);
+}
+
+.prose th {
+  color: var(--text);
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
+.prose td code {
+  white-space: nowrap;
+}
+
 .mermaid-diagram {
   display: flex;
   justify-content: center;
