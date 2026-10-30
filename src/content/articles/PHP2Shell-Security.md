@@ -25,13 +25,13 @@ tags:
 
 ---
 
-**# PHP2Shell: Inside the PHP Security Crisis of October 2026**
+# PHP2Shell: Inside the PHP Security Crisis of October 2026
 
-****How two vulnerabilities in PHP's runtime turned ordinary HTTP requests into a potential remote code execution risk****
+**How two vulnerabilities in PHP's runtime turned ordinary HTTP requests into a potential remote code execution risk**
 
-On October 21, 2026, the PHP security team released emergency updates for two critical vulnerabilities in the PHP runtime. Tracked as ****CVE-2026-109618**** and ****CVE-2026-109619****, the vulnerabilities were rated ****CVSS 9.2**** and could allow unauthenticated remote attackers to execute arbitrary code on affected systems.
+On October 21, 2026, the PHP security team released emergency updates for two critical vulnerabilities in the PHP runtime. Tracked as **CVE-2026-109618** and **CVE-2026-109619**, the vulnerabilities were rated **CVSS 9.2** and could allow unauthenticated remote attackers to execute arbitrary code on affected systems.
 
-The incident became known as ****PHP2Shell****.
+The incident became known as **PHP2Shell**.
 
 What made this incident particularly concerning was the location of the vulnerabilities. These were not merely bugs in a WordPress plugin, a Laravel controller, or a custom PHP application. They affected PHP's internal request-processing and memory-management behavior.
 
@@ -41,11 +41,11 @@ On October 23, PHP published an additional informational advisory concerning a r
 
 Official references:
 
-- [PHP security release announcement](https\://www.php.net/archive/2026.php)
+- [PHP security release announcement](https://www.php.net/archive/2026.php)
 
-- [CVE-2026-109618: Out-of-memory corruption](https\://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w)
+- [CVE-2026-109618: Out-of-memory corruption](https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w)
 
-- [CVE-2026-109619: Stale global state](https\://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp)
+- [CVE-2026-109619: Stale global state](https://github.com/php/php-src/security/advisories/GHSA-6wmf-4rv5-p3rp)
 
 This article examines what happened, how the underlying bugs work, what a realistic attack scenario looks like, and what backend engineers can learn from the incident.
 
@@ -82,7 +82,7 @@ Sources:
 
 ---
 
-**## 1. First, Understand Where PHP Fits in a Web Application**
+## 1. First, Understand Where PHP Fits in a Web Application
 
 Before examining the vulnerabilities, we need to understand how a PHP application processes a request.
 
@@ -116,19 +116,19 @@ flowchart TD
 
 Each component has a different responsibility.
 
-****Web server or reverse proxy****
+**Web server or reverse proxy**
 
 Receives HTTP traffic, handles connections, and may enforce request-size limits or other traffic policies.
 
-****PHP runtime****
+**PHP runtime**
 
 Initializes the request, parses request data, manages memory, executes PHP code, and performs request cleanup.
 
-****Application or framework****
+**Application or framework**
 
 Runs business logic such as authentication, payment processing, validation, and database operations.
 
-****Database****
+**Database**
 
 Stores application data such as users, products, orders, and transactions.
 
@@ -142,31 +142,28 @@ This is the architectural reason PHP2Shell matters.
 
 ---
 
-**## 2. What Exactly Was PHP2Shell?**
+## 2. What Exactly Was PHP2Shell?
 
 PHP2Shell refers to two related critical vulnerabilities in PHP's core runtime.
 
 | Vulnerability | Root cause | Potential impact |
-
 |---|---|---|
-
 | CVE-2026-109618 | Improper handling of out-of-memory conditions during request processing | Memory corruption and remote code execution |
-
 | CVE-2026-109619 | Request-owned state remaining accessible after its memory has been released | Use-after-free and remote code execution |
 
 Both vulnerabilities concern internal state that PHP must manage correctly while processing and cleaning up requests.
 
 They are particularly important because the affected operations may occur before normal application-level processing.
 
-**### What does unauthenticated remote code execution mean?**
+### What does unauthenticated remote code execution mean?
 
 Let's break that phrase down.
 
-- ****Remote:**** The attacker interacts with a system over a network.
+- **Remote:** The attacker interacts with a system over a network.
 
-- ****Unauthenticated:**** The attacker does not necessarily need a valid account or login session.
+- **Unauthenticated:** The attacker does not necessarily need a valid account or login session.
 
-- ****Code execution:**** The attacker may cause the affected process to execute operations under the privileges available to it.
+- **Code execution:** The attacker may cause the affected process to execute operations under the privileges available to it.
 
 Imagine a public e-commerce website that uses a vulnerable PHP runtime.
 
@@ -176,19 +173,19 @@ Successful exploitation could allow an attacker to compromise the PHP worker, ac
 
 However, successful exploitation is not guaranteed on every server. Runtime version, configuration, server integration, memory layout, and the particular request path all affect exploitability.
 
-****Important distinction:**** A critical vulnerability does not mean every PHP website was successfully compromised. It means affected installations had a serious security risk that required urgent remediation.
+**Important distinction:** A critical vulnerability does not mean every PHP website was successfully compromised. It means affected installations had a serious security risk that required urgent remediation.
 
 ---
 
-**## 3. Vulnerability One: Out-of-Memory Corruption**
+## 3. Vulnerability One: Out-of-Memory Corruption
 
-****CVE-2026-109618****
+**CVE-2026-109618**
 
 The first vulnerability involves PHP's handling of out-of-memory conditions.
 
 To understand it, we need to examine how applications allocate memory and how runtimes recover when memory allocation fails.
 
-**### 3.1 What is an out-of-memory condition?**
+### 3.1 What is an out-of-memory condition?
 
 Every running process uses memory to store information it needs while executing.
 
@@ -212,7 +209,7 @@ Consider a simplified PHP endpoint:
 
 ```php
 
-\<?php
+<?php
 
 $data = [];
 
@@ -254,7 +251,7 @@ The problem in CVE-2026-109618 was not simply that PHP could run out of memory. 
 
 Subsequent cleanup could then treat invalid internal state as valid.
 
-**### 3.2 Why is partial initialization dangerous?**
+### 3.2 Why is partial initialization dangerous?
 
 Imagine a runtime preparing metadata for an incoming request.
 
@@ -286,9 +283,9 @@ The official advisory explains that PHP used `longjmp()` to escape certain out-o
 
 The vulnerable state could subsequently be encountered during request shutdown.
 
-**### 3.3 A simplified example of the programming mistake**
+### 3.3 A simplified example of the programming mistake
 
-The following C code is illustrative pseudocode in ordinary C syntax. It is ****not PHP's actual vulnerable source code and is not an exploit****.
+The following C code is illustrative pseudocode in ordinary C syntax. It is **not PHP's actual vulnerable source code and is not an exploit**.
 
 ```c
 
@@ -340,9 +337,9 @@ Cleanup examines incomplete state
 
 The exact bug in a real runtime can be more complex than this example. It may involve several structures, pointers, error-handling paths, and request lifecycle operations.
 
-The underlying principle is the same: ****error handling must preserve the invariants that normal execution depends on.****
+The underlying principle is the same: **error handling must preserve the invariants that normal execution depends on.**
 
-**### 3.4 How could an HTTP request trigger this?**
+### 3.4 How could an HTTP request trigger this?
 
 PHP automatically parses certain request bodies.
 
@@ -412,7 +409,7 @@ This diagram represents the vulnerability class, not a reproducible exploit reci
 
 The attacker does not need to submit a valid business transaction. In a vulnerable configuration, the dangerous processing can occur before the application's business logic begins.
 
-**### 3.5 Why ordinary request-size limits may not be enough**
+### 3.5 Why ordinary request-size limits may not be enough
 
 You might reasonably ask:
 
@@ -438,9 +435,9 @@ Limits should be applied at multiple layers, but the runtime vulnerability itsel
 
 ---
 
-**## 4. Vulnerability Two: Stale Global State and Use-After-Free**
+## 4. Vulnerability Two: Stale Global State and Use-After-Free
 
-****CVE-2026-109619****
+**CVE-2026-109619**
 
 The second vulnerability involves a different but related memory-safety problem.
 
@@ -452,7 +449,7 @@ If persistent state continues to refer to memory that has already been released,
 
 This is the central idea behind a use-after-free vulnerability.
 
-**### 4.1 What is use-after-free?**
+### 4.1 What is use-after-free?
 
 In languages such as C, developers can explicitly allocate and release memory.
 
@@ -488,13 +485,13 @@ printf("%d\n", *value);
 
 The final dereference uses a pointer after its memory has been freed.
 
-This is called ****use-after-free (UAF)****.
+This is called **use-after-free (UAF)**.
 
 The result is undefined behavior. The program might crash, display an unexpected value, corrupt memory, or exhibit other behavior depending on the environment.
 
 It is not guaranteed to produce a useful or repeatable result for an attacker.
 
-**### 4.2 Why can this happen in a long-running PHP worker?**
+### 4.2 Why can this happen in a long-running PHP worker?
 
 Consider a PHP-FPM worker that handles requests sequentially.
 
@@ -536,7 +533,7 @@ If an operation terminates unexpectedly before the reset occurs, the reference c
 
 A later request may encounter the stale reference before normal initialization replaces it.
 
-**### 4.3 A realistic programming analogy**
+### 4.3 A realistic programming analogy
 
 Imagine a Java service that stores request data in a global field.
 
@@ -570,7 +567,7 @@ In a native runtime such as PHP's C implementation, the analogous lifetime error
 
 The lesson for backend engineers is to keep request-scoped state separate from worker-scoped state and to guarantee cleanup on every exit path.
 
-**### 4.4 Why error handling is central to this vulnerability**
+### 4.4 Why error handling is central to this vulnerability
 
 Consider the lifecycle of a request:
 
@@ -646,24 +643,18 @@ The PHP advisory also identifies a subtle possibility: state can be repopulated 
 
 ---
 
-**## 5. Why the Two Vulnerabilities Matter Together**
+## 5. Why the Two Vulnerabilities Matter Together
 
 Both vulnerabilities concern the relationship between request processing, internal state, and cleanup.
 
 However, they should not be confused with one another.
 
 | Property | CVE-2026-109618 | CVE-2026-109619 |
-
 |---|---|---|
-
 | Primary issue | Unsafe handling of out-of-memory conditions | Stale references to released request memory |
-
 | Main concept | Partially initialized state | Use-after-free |
-
 | Important lifecycle stage | Request initialization and shutdown | Cleanup and subsequent request initialization |
-
 | Potential impact | Memory corruption and RCE | Memory corruption and RCE |
-
 | Complete remediation | Upgrade to a fixed PHP build | Upgrade to a fixed PHP build |
 
 Both show why a runtime must maintain strict invariants across every request lifecycle transition.
@@ -672,7 +663,7 @@ A runtime cannot assume that every allocation succeeds, every operation complete
 
 ---
 
-**## 6. Real-World Scenario: An Online Store Running PHP**
+## 6. Real-World Scenario: An Online Store Running PHP
 
 Let's consider a hypothetical e-commerce company called ShopStack.
 
@@ -694,25 +685,25 @@ ShopStack operates:
 
 The server uses an affected PHP build and accepts public HTTP traffic.
 
-**### Step 1: The attacker identifies the technology**
+### Step 1: The attacker identifies the technology
 
 An attacker discovers that the website processes PHP requests.
 
 Technology identification alone does not prove that the server is vulnerable, but it can help an attacker prioritize further investigation.
 
-**### Step 2: The attacker sends a crafted request**
+### Step 2: The attacker sends a crafted request
 
 Instead of submitting a normal login form, the attacker sends specially constructed HTTP input designed to reach a vulnerable runtime-processing path.
 
 The request may be processed before the application validates its fields or checks authentication.
 
-**### Step 3: The runtime reaches a vulnerable state**
+### Step 3: The runtime reaches a vulnerable state
 
 Depending on the vulnerability and server configuration, request processing may encounter an unsafe out-of-memory path or stale internal state.
 
 The outcome depends on the exact runtime build, configuration, and request-handling conditions.
 
-**### Step 4: Successful exploitation may compromise the worker**
+### Step 4: Successful exploitation may compromise the worker
 
 If exploitation succeeds, the attacker may gain code execution with the privileges of the affected PHP process.
 
@@ -720,7 +711,7 @@ The PHP worker may have access to application configuration, database credential
 
 The attacker does not automatically obtain root privileges. The impact depends on process permissions, operating-system isolation, database privileges, and other controls.
 
-**### Step 5: The attacker attempts to expand access**
+### Step 5: The attacker attempts to expand access
 
 A compromised process might be used to access secrets, modify writable application files, or communicate with other systems that trust the application server.
 
@@ -728,7 +719,7 @@ The database could be exposed if the PHP worker possesses broad database credent
 
 A well-isolated deployment can reduce the blast radius, but it cannot make the vulnerable runtime safe.
 
-**### Step 6: The company discovers suspicious activity**
+### Step 6: The company discovers suspicious activity
 
 Possible warning signs include:
 
@@ -750,23 +741,23 @@ Possible warning signs include:
 
 None of these indicators proves exploitation by itself. They must be interpreted alongside the system's normal behavior and other evidence.
 
-**### Step 7: The incident response team contains the problem**
+### Step 7: The incident response team contains the problem
 
 The team identifies every PHP runtime, applies the appropriate security updates, restarts affected workers, reviews logs, investigates suspicious activity, and rotates credentials if compromise is suspected.
 
 If there is evidence of successful exploitation, patching alone is not enough. The team must also investigate persistence, unauthorized access, and possible data exposure.
 
-****The important lesson:**** A runtime vulnerability can become an application, infrastructure, and business-security incident even when the application developers did not introduce the original bug.
+**The important lesson:** A runtime vulnerability can become an application, infrastructure, and business-security incident even when the application developers did not introduce the original bug.
 
 ---
 
-**## 7. Why Application-Level Validation Cannot Fully Fix This**
+## 7. Why Application-Level Validation Cannot Fully Fix This
 
 Suppose a Laravel application has this controller:
 
 ```php
 
-\<?php
+<?php
 
 namespace App\Http\Controllers;
 
@@ -848,29 +839,24 @@ A secure deployment needs both.
 
 ---
 
-**## 8. What Developers Should Do Immediately**
+## 8. What Developers Should Do Immediately
 
 The PHP security team published fixed releases on October 21, 2026.
 
 | PHP branch | Fixed version |
-
 |---|---|
-
 | PHP 8.5 | 8.5.12 |
-
 | PHP 8.4 | 8.4.27 |
-
 | PHP 8.3 | 8.3.36 |
-
 | PHP 8.2 | 8.2.35 |
 
 These are upstream fixed versions for the two October 21 vulnerabilities. Operating-system vendors and hosting providers may supply backported patches with different package version strings.
 
 PHP 8.1 and older branches are end-of-life upstream. Organizations running these branches should check for trusted vendor backports and plan to migrate to a supported version.
 
-Always verify the current guidance in the [official PHP security release announcement](https\://www.php.net/archive/2026.php).
+Always verify the current guidance in the [official PHP security release announcement](https://www.php.net/archive/2026.php).
 
-**### Step 1: Check the PHP CLI version**
+### Step 1: Check the PHP CLI version
 
 Run:
 
@@ -892,7 +878,7 @@ This example shows a version that predates the upstream PHP 8.4.27 fix.
 
 However, the CLI version does not necessarily match the PHP runtime used by the web server.
 
-**### Step 2: Identify the web runtime**
+### Step 2: Identify the web runtime
 
 If the server uses PHP-FPM, inspect the running services:
 
@@ -908,7 +894,7 @@ For Apache, determine whether the server uses `mod_php`, PHP-FPM through FastCGI
 
 A server can have several PHP versions installed simultaneously.
 
-**### Step 3: Upgrade using the appropriate vendor**
+### Step 3: Upgrade using the appropriate vendor
 
 For a Debian- or Ubuntu-based server, first check which PHP packages and repositories are configured.
 
@@ -934,7 +920,7 @@ This is an example for a system using those package names. It is not a universal
 
 Do not assume that the command installs a patched version. Confirm the candidate version and the package vendor's security advisory first.
 
-**### Step 4: Restart the affected workers**
+### Step 4: Restart the affected workers
 
 After upgrading, restart the applicable PHP-FPM service or reload the relevant server integration according to the vendor's instructions.
 
@@ -950,7 +936,7 @@ Use the actual service name for your system.
 
 Restarting matters because running workers must stop using the old runtime and load the updated code.
 
-**### Step 5: Verify the result**
+### Step 5: Verify the result
 
 Check the CLI version again:
 
@@ -974,7 +960,7 @@ For a temporary, access-restricted diagnostic endpoint, an administrator can use
 
 ```php
 
-\<?php
+<?php
 
 echo PHP_VERSION;
 
@@ -984,7 +970,7 @@ Remove the endpoint immediately after verification. Do not leave public diagnost
 
 Where package vendors use backported fixes, verify the package build and vendor advisory rather than relying only on the displayed upstream version number.
 
-**### Step 6: Investigate possible compromise**
+### Step 6: Investigate possible compromise
 
 If a system was exposed while running a vulnerable build, investigate the exposure window.
 
@@ -1012,7 +998,7 @@ A successful attacker may have installed persistence that remains after PHP is p
 
 ---
 
-**## 9. Temporary Mitigations: What Helps and What Does Not**
+## 9. Temporary Mitigations: What Helps and What Does Not
 
 Patching to a fixed build is the complete remediation for these vulnerabilities.
 
@@ -1020,7 +1006,7 @@ If immediate patching is impossible, the PHP advisory provides temporary measure
 
 These are risk-reduction measures, not proof that an affected server is safe.
 
-**### 9.1 Disable session upload progress where appropriate**
+### 9.1 Disable session upload progress where appropriate
 
 The PHP advisory identifies session upload-progress handling as one relevant path for CVE-2026-109619.
 
@@ -1038,9 +1024,9 @@ Restart all affected workers and verify the effective setting.
 
 Do not rely on calling `ini_set()` from application code to protect request processing that can occur before the application runs.
 
-On October 23, PHP also published an informational advisory about an unusual configuration involving changes to `session.serialize_handler` at runtime. Consult the [official PHP news archive](https\://www.php.net/archive/2026.php) for the latest guidance.
+On October 23, PHP also published an informational advisory about an unusual configuration involving changes to `session.serialize_handler` at runtime. Consult the [official PHP news archive](https://www.php.net/archive/2026.php) for the latest guidance.
 
-**### 9.2 Enforce sensible request limits**
+### 9.2 Enforce sensible request limits
 
 For applications that do not require large uploads, conservative body-size limits can reduce exposure to oversized or unusually complex requests.
 
@@ -1074,7 +1060,7 @@ Also consider appropriate limits for:
 
 Where possible, enforce request limits at the reverse proxy or web server before data reaches PHP.
 
-**### 9.3 Understand the memory-limit mitigation carefully**
+### 9.3 Understand the memory-limit mitigation carefully
 
 The official advisory for CVE-2026-109618 identifies administratively enforced `memory_limit=-1` as a temporary mitigation for the confirmed controllable out-of-memory path.
 
@@ -1084,7 +1070,7 @@ It also changes resource-control behavior and must be considered carefully along
 
 Do not blindly apply this setting to production. Follow the current official advisory and assess the availability and isolation implications for your deployment.
 
-**### 9.4 Do not confuse error suppression with memory safety**
+### 9.4 Do not confuse error suppression with memory safety
 
 Settings such as:
 
@@ -1112,11 +1098,11 @@ These controls have different purposes.
 
 ---
 
-**## 10. How to Design Better Backend Systems After This Incident**
+## 10. How to Design Better Backend Systems After This Incident
 
 PHP2Shell offers lessons for engineers working in PHP, Java, Go, Node.js, Python, and other backend ecosystems.
 
-**### Lesson 1: Keep request-scoped state isolated**
+### Lesson 1: Keep request-scoped state isolated
 
 Do not accidentally retain user-specific state across requests.
 
@@ -1152,7 +1138,7 @@ public class OrderService {
 
 This Java example illustrates a broader state-isolation principle. It is not a direct reproduction of PHP's native memory bug.
 
-**### Lesson 2: Make cleanup safe on every exit path**
+### Lesson 2: Make cleanup safe on every exit path
 
 A request can fail because of:
 
@@ -1176,7 +1162,7 @@ In languages with manual memory management, that includes ensuring that pointers
 
 In garbage-collected languages, cleanup and resource ownership still matter for files, sockets, transactions, locks, and other external resources.
 
-**### Lesson 3: Treat runtime dependencies as production dependencies**
+### Lesson 3: Treat runtime dependencies as production dependencies
 
 A backend service is not only its application code.
 
@@ -1206,7 +1192,7 @@ A secure controller cannot compensate for a vulnerable runtime that processes in
 
 Maintain an inventory of runtime versions, extensions, base images, and production deployments.
 
-**### Lesson 4: Make emergency patching repeatable**
+### Lesson 4: Make emergency patching repeatable
 
 A team should be able to answer these questions quickly:
 
@@ -1228,7 +1214,7 @@ A team should be able to answer these questions quickly:
 
 If these answers require days of manual investigation, the organization has a vulnerability-management problem beyond PHP2Shell itself.
 
-**### Lesson 5: Use isolation to reduce the blast radius**
+### Lesson 5: Use isolation to reduce the blast radius
 
 The PHP worker should run with only the permissions it needs.
 
@@ -1252,7 +1238,7 @@ These measures do not prevent every form of remote code execution. They can redu
 
 ---
 
-**## 11. The Open-Source Security Question**
+## 11. The Open-Source Security Question
 
 A vulnerability in a widely deployed runtime raises a broader question: how does the security of open-source infrastructure get maintained?
 
@@ -1296,7 +1282,7 @@ It should not be reduced to the claim that open-source software is inherently in
 
 ---
 
-**## 12. What About AI-Assisted Vulnerability Research?**
+## 12. What About AI-Assisted Vulnerability Research?
 
 AI tools can assist security researchers by helping them navigate unfamiliar codebases, identify suspicious control flow, generate test cases, summarize complex functions, and explore possible failure paths.
 
@@ -1324,11 +1310,11 @@ The broader lesson is that AI can assist security research, but reliable vulnera
 
 ---
 
-**## 13. A Defensive Checklist for Backend Engineers**
+## 13. A Defensive Checklist for Backend Engineers
 
 Use this checklist when assessing your own PHP deployment.
 
-**### Inventory**
+### Inventory
 
 - [ ] Identify every PHP runtime used by production applications.
 
@@ -1338,7 +1324,7 @@ Use this checklist when assessing your own PHP deployment.
 
 - [ ] Determine whether each runtime is supported by its vendor.
 
-**### Remediation**
+### Remediation
 
 - [ ] Check the official PHP advisory.
 
@@ -1350,7 +1336,7 @@ Use this checklist when assessing your own PHP deployment.
 
 - [ ] Confirm that old vulnerable instances are no longer receiving traffic.
 
-**### Hardening**
+### Hardening
 
 - [ ] Apply suitable request-body and multipart limits.
 
@@ -1362,7 +1348,7 @@ Use this checklist when assessing your own PHP deployment.
 
 - [ ] Restrict database permissions and access to secrets.
 
-**### Incident response**
+### Incident response
 
 - [ ] Review logs for suspicious requests and abnormal worker behavior.
 
@@ -1376,7 +1362,7 @@ Use this checklist when assessing your own PHP deployment.
 
 ---
 
-**## Additional advisory: CVE-2026-115560 — session upload progress
+## Additional advisory: CVE-2026-115560 — session upload progress
 
 CVE-2026-115560 is separate from the two PHP2Shell vulnerabilities. PHP published an informational advisory on October 23, 2026. The PHP team described an unlikely remote-code-execution vector that requires a specific combination of configuration and application behavior.
 
@@ -1444,7 +1430,7 @@ However, do not assume that every older installation is necessarily unpatched: o
 - Review access, error, PHP-FPM and operating-system logs for suspicious activity.
 - If compromise is suspected, preserve evidence, investigate persistence and rotate exposed credentials from a clean environment.
 
-## 14. Final Takeaway**
+## 14. Final Takeaway
 
 PHP2Shell is a case study in how a defect deep inside a language runtime can affect applications built on top of it.
 
@@ -1468,11 +1454,11 @@ For backend engineers, the practical response is clear:
 
 7. Investigate possible compromise rather than treating patch installation as proof that the incident is over.
 
-****A secure application is only as strong as the layers that process its input before the application code even starts.****
+**A secure application is only as strong as the layers that process its input before the application code even starts.**
 
 ---
 
-**## Official Sources and Further Reading
+## Official Sources and Further Reading
 
 1. [PHP — Official security release announcements and news archive](https://www.php.net/archive/2026.php)
 2. [PHP official advisory: CVE-2026-109618 — out-of-memory corruption](https://github.com/php/php-src/security/advisories/GHSA-w8hw-w9fx-j79w)
@@ -1487,4 +1473,4 @@ For backend engineers, the practical response is clear:
 11. [National Cyber Security Centre of the Netherlands — PHP2Shell operational information](https://github.com/NCSC-NL/php2shell)
 12. [PHP2Shell Live — dated technical dossier and source tracker](https://php2shell.live/)
 
-*Disclaimer: This article is intended for technical education and defensive security. The diagrams and simplified code illustrate concepts; they are not reproductions of the actual PHP exploit. Verify current PHP and vendor advisories before applying production changes.**
+*Disclaimer: This article is intended for technical education and defensive security. The diagrams and simplified code illustrate concepts; they are not reproductions of the actual PHP exploit. Verify current PHP and vendor advisories before applying production changes.*
